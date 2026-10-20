@@ -19,6 +19,40 @@ void printHUD() {
 // [МЕСТО ДЛЯ ФУНКЦИЙ РАЗРАБОТЧИКОВ ИЗ PULL REQUEST'ОВ]
 // -------------------------------------------------------------
 
+// [РАЗРАБОТЧИК 2: МОДУЛЬ "БРОСОК КОСТИ" (ISSUE #2)]
+void rollDice() {
+    const int roll = rand() % 20 + 1;
+    int delta = 0;
+
+    std::cout << "\n[Кости] Ты бросаешь D20... выпало: " << roll << "\n";
+
+    if (roll == 20) {
+        delta = 100;
+        std::cout << "[Кости] КРИТИЧЕСКИЙ УСПЕХ! Джекпот!\n";
+    } else if (roll >= 15) {
+        delta = 50;
+        std::cout << "[Кости] Отличный бросок.\n";
+    } else if (roll >= 10) {
+        delta = 20;
+        std::cout << "[Кости] Неплохо.\n";
+    } else if (roll >= 5) {
+        delta = -10;
+        std::cout << "[Кости] Неудача.\n";
+    } else if (roll > 1) {
+        delta = -30;
+        std::cout << "[Кости] Провал!\n";
+    } else {  // roll == 1
+        delta = -50;
+        std::cout << "[Кости] КРИТИЧЕСКИЙ ПРОВАЛ! Проклятие!\n";
+    }
+
+    score += delta;
+    if (score < 0) score = 0;
+
+    std::cout << "[Кости] Счет: " << (delta >= 0 ? "+" : "") << delta
+              << "  (итого: " << score << ")\n";
+}
+
 int main() {
     srand(time(NULL));
     int choice = 0;
@@ -42,10 +76,9 @@ int main() {
                 break;
             
             case 2:
-                // [РАЗРАБОТЧИК 2: ПОДКЛЮЧИТ МОДУЛЬ ОТХИЛА (ISSUE #2)]
-                std::cout << "\n[!] Модуль лагеря еще в разработке (Issue #2).\n";
+                rollDice();
                 break;
-            
+
             case 3:
                 // [РАЗРАБОТЧИК 3: ПОДКЛЮЧИТ РУЛЕТКУ/БОССА (ISSUE #3)]
                 std::cout << "\n[!] Модуль событий еще в разработке (Issue #3).\n";
