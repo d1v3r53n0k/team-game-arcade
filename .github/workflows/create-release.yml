@@ -1,0 +1,91 @@
+name: Create Release on Pull Request Merge
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: Build for ${{ matrix.target }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - target: linux-x64
+            compiler: g++
+            flags: "-m64"
+            output_name: team-game-arcade.linux-x64.elf
+          - target: linux-x86
+            compiler: g++
+            flags: "-m32"
+            output_name: team-game-arcade.linux-x86.elf
+          - target: windows-x64
+            compiler: x86_64-w64-mingw32-g++
+            flags: "-static -static-libgcc -static-libstdc++"
+            output_name: team-game-arcade.windows-x64.exe
+          - target: windows-x86
+            compiler: i686-w64-mingw32-g++
+            flags: "-static -static-libgcc -static-libstdc++"
+            output_name: team-game-arcade.windows-x86.exe
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Cache APT Packages
+      uses: actions/cache@v4
+      id: apt-cache
+      with:
+        path: /var/cache/apt/archives
+        key: ${{ runner.os }}-apt-${{ matrix.target }}
+
+    - name: Install Compilers and Dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential g++-multilib mingw-w64
+
+    - name: Build Binary
+      run: |
+        ${{ matrix.compiler }} ${{ matrix.flags }} -o ${{ matrix.output_name }} main.cpp
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: binary-${{ matrix.target }}
+        path: ${{ matrix.output_name }}
+
+  release:
+    name: Create GitHub Release
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Download All Artifacts
+      uses: actions/download-artifact@v4
+      with:
+        merge-multiple: true
+
+    - name: Generate Release Tag
+      id: tag
+      run: |
+        TAG_NAME="v$(date +'%Y.%m.%d-%H.%M')"
+        echo "tag_name=$TAG_NAME" >> $GITHUB_OUTPUT
+
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: ${{ steps.tag.outputs.tag_name }}
+        name: Release ${{ steps.tag.outputs.tag_name }}
+        draft: false
+        prerelease: false
+        files: |
+          team-game-arcade.linux-x64.elf
+          team-game-arcade.linux-x86.elf
+          team-game-arcade.windows-x64.exe
+          team-game-arcade.windows-x86.exe
