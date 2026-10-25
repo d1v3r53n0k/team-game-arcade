@@ -58,7 +58,7 @@ void CoinFlip() {
     std::cout << "[Монетка] Угадай сторону: Орел(1) или Решка (2). Введите выбор: ";
     int choice;
     int fast;
-    if (not(std::cin >> choice) || (choice != 1 && choice != 2)) {
+    if (!(std::cin >> choice) || (choice != 1 && choice != 2)) {
         std::cout << "[Монетка] Неверный выбор! Ход пропущен.\n";
         return;
     }
