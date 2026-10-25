@@ -1,4 +1,5 @@
 #include <iostream>
+#include <iomanip>
 #include <string>
 #include <cstdlib>
 #include <ctime>
@@ -23,12 +24,14 @@ void printHUD() {
 
 // [РАЗРАБОТЧИК 1: МОДУЛЬ "КОЛЕСО ФОРТУНЫ" (ISSUE #1)]
 void spinWheel() {
-    std::cout << "\n[Колесо] Нажми Enter, чтобы вращать! " << std::endl;
+    std::cout << "\n[Колесо] Нажми Enter, чтобы вращать! ";
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    std::cin.get();
 
     int value = 0;
     for (int i = 0; i < 13; i++) {
         value = rand() % 201 - 100;
-        std::cout << "\rКолесо: *вращается*... " << value;
+        std::cout << "\rКолесо: *вращается*... " << std::setw(4) << value;
         std::this_thread::sleep_for(std::chrono::milliseconds(50 * i));
     }
 
