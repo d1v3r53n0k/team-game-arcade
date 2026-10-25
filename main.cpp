@@ -2,6 +2,8 @@
 #include <string>
 #include <cstdlib>
 #include <ctime>
+#include <chrono>
+#include <thread>
 
 // Состояние игры (базовые переменные)
 int hp = 100;
@@ -19,6 +21,31 @@ void printHUD() {
 // [МЕСТО ДЛЯ ФУНКЦИЙ РАЗРАБОТЧИКОВ ИЗ PULL REQUEST'ОВ]
 // -------------------------------------------------------------
 
+// [РАЗРАБОТЧИК 1: МОДУЛЬ "КОЛЕСО ФОРТУНЫ" (ISSUE #1)]
+void spinWheel() {
+    std::cout << "\n[Колесо] Нажми Enter, чтобы вращать! " << std::endl;
+
+    int value = 0;
+    for (int i = 0; i < 13; i++) {
+        value = rand() % 201 - 100;
+        std::cout << "\rКолесо: *вращается*... " << value;
+        std::this_thread::sleep_for(std::chrono::milliseconds(50 * i));
+    }
+
+    const char *quote = "\n";
+    if (value >= -100 && value <= -81)      quote = "Фаталити!\n";
+    else if (value >= -80 && value <= -41)  quote = "Благодарю за пожертвование!)\n";
+    else if (value >= -40 && value <= -1)   quote = "Хотел как лучше, а получилось как всегда...\n";
+    else if (value == 0)                    quote = "Признайся, ты просто тратишь моё время?";
+    else if (value >= 1 && value <= 40)     quote = "Нууу, это лучше, чем ничего.\n";
+    else if (value >= 41 && value <= 80)    quote = "Как ты это сделал?!\n";
+    else if (value >= 81 && value <= 100)   quote = "Ты жульничаешь, но я не могу это доказать.\n";
+
+    std::cout << "\n[Колесо]: " << quote << std::endl;
+
+    score += value;
+}
+
 int main() {
     srand(time(NULL));
     int choice = 0;
@@ -27,7 +54,7 @@ int main() {
     
     while (hp > 0) {
         printHUD();
-        std::cout << "1. Рискованная операция (Высокая награда / Высокий риск)\n";
+        std::cout << "1. Вращать колесо\n";
         std::cout << "2. База / Лагерь (Лечение и обмен ресурсов)\n";
         std::cout << "3. Особое событие / Рулетка удачи\n";
         std::cout << "0. Сдаться и зафиксировать счет\n";
@@ -38,7 +65,7 @@ int main() {
         switch (choice) {
             case 1:
                 // [РАЗРАБОТЧИК 1: ПОДКЛЮЧИТ ФУНКЦИЮ РИСКА (ISSUE #1)]
-                std::cout << "\n[!] Модуль риска еще в разработке (Issue #1).\n";
+		spinWheel();
                 break;
             
             case 2:
