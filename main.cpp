@@ -6,9 +6,13 @@
 #include <chrono>
 #include <thread>
 
+// #ifdef _WIN32
+// #include <Windows.h>
+// #endif
+
 // Состояние игры (базовые переменные)
 int hp = 100;
-int score = 0; // Деньги + счёт
+int score = 10; // Деньги + счёт
 int turn = 1;
 
 void printHUD() {
@@ -30,7 +34,7 @@ void spinWheel() {
     int value = 0;
     for (int i = 0; i < 13; i++) {
         value = rand() % 201 - 100;
-        std::cout << "\rКолесо: *вращается*... " << std::setw(4) << value;
+        std::cout << "\rКолесо: *вращается*... " << std::setw(4) << value << std::flush;
         std::this_thread::sleep_for(std::chrono::milliseconds(50 * i));
     }
 
@@ -46,6 +50,7 @@ void spinWheel() {
     std::cout << "\n[Колесо]: " << quote << std::endl;
 
     score += value;
+    if (score < 0) score = 0;
 }
 
 // [РАЗРАБОТЧИК 2: МОДУЛЬ "БРОСОК КОСТИ" (ISSUE #2)]
@@ -112,12 +117,18 @@ void CoinFlip() {
 
 
 int main() {
+#ifdef _WIN32
+    // SetConsoleCP(CP_UTF8);
+    // SetConsoleOutputCP(CP_UTF8);
+    system("chcp 65001>NUL");
+#endif
+
     srand(time(NULL));
     int choice = 0;
     
     std::cout << ">>> ЗАПУСК СИМУЛЯЦИИ: БИТВА ЗА РЕКОРД <<<\n";
     
-    while (hp > 0) {
+    while (hp > 0 && score > 0) {
         printHUD();
         std::cout << "1. Вращать колесо\n";
         std::cout << "2. Бросить кость\n";
@@ -154,8 +165,7 @@ int main() {
         // Каждый успешный ход дает очки выживания
         if (hp > 0) {
             turn++;
-            score += 10;
-        }
+	}
     }
     
     std::cout << "\n💀 ИГРА ОКОНЧЕНА. Ваш итоговый рекорд: " << score << " очков!\n";
