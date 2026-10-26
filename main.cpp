@@ -6,6 +6,10 @@
 #include <chrono>
 #include <thread>
 
+#ifdef _WIN32
+#include <Windows.h>
+#endif
+
 // Состояние игры (базовые переменные)
 int hp = 100;
 int score = 10; // Деньги + счёт
@@ -113,6 +117,11 @@ void CoinFlip() {
 
 
 int main() {
+#ifdef _WIN32
+    SetConsoleCP(CP_UTF8);
+    SetConsoleOutputCP(CP_UTF8);
+#endif
+
     srand(time(NULL));
     int choice = 0;
     
