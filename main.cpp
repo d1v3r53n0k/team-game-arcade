@@ -46,6 +46,7 @@ void spinWheel() {
     std::cout << "\n[Колесо]: " << quote << std::endl;
 
     score += value;
+    if (score < 0) score = 0;
 }
 
 // [РАЗРАБОТЧИК 2: МОДУЛЬ "БРОСОК КОСТИ" (ISSUE #2)]
